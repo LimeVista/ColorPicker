@@ -152,7 +152,7 @@ class HueBoard @JvmOverloads constructor(
 
         pickerPositionY = when {
             pickerPositionY < 0 -> 0f
-            pickerPositionY > height -> width.toFloat()
+            pickerPositionY > height -> height.toFloat()
             else -> pickerPositionY
         }
 
