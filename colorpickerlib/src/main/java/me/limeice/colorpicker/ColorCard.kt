@@ -18,15 +18,21 @@ class ColorCard @JvmOverloads constructor(
 
     companion object {
         @ColorInt
-        private val colors: IntArray = intArrayOf(0xFFFF0000.toInt(), 0xFFD100FF.toInt(), 0xFF0A00FF.toInt(),
-                0xFF00D5FF.toInt(), 0xFF00FF32.toInt(), 0xFFF4FF02.toInt(), 0xFFFF0000.toInt())
+        private val colors = intArrayOf(
+                Color.HSVToColor(floatArrayOf(0f, 1f, 1f)),
+                Color.HSVToColor(floatArrayOf(60f, 1f, 1f)),
+                Color.HSVToColor(floatArrayOf(120f, 1f, 1f)),
+                Color.HSVToColor(floatArrayOf(180f, 1f, 1f)),
+                Color.HSVToColor(floatArrayOf(240f, 1f, 1f)),
+                Color.HSVToColor(floatArrayOf(300f, 1f, 1f)),
+                Color.HSVToColor(floatArrayOf(360f, 1f, 1f)))
     }
 
     private val mPaddingBoth: Int
 
     private val mLockHeight: Int
 
-    private var mGradient: LinearGradient
+    private var mGradient: LinearGradient = LinearGradient(0f, 0f, 0f, 0f, colors, null, Shader.TileMode.CLAMP)
 
     private val mPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
@@ -65,7 +71,6 @@ class ColorCard @JvmOverloads constructor(
         mPaint.isAntiAlias = true
         mPickerPaintSolid.style = Paint.Style.FILL
         mPickerPaintSolid.color = pickColor
-        mGradient = LinearGradient(0f, 0f, width.toFloat() - mLockHeight, 0f, colors, null, Shader.TileMode.CLAMP)
 
         gesture.setDrag { _, dx, _ ->
             pickerPosition += dx
@@ -127,6 +132,7 @@ class ColorCard @JvmOverloads constructor(
         invalidate()
     }
 
+
     @ColorInt
     private fun calcColor(): Int {
         val h = mLockHeight / 2f
@@ -144,6 +150,27 @@ class ColorCard @JvmOverloads constructor(
                 ((c1.r() + (c2.r() - c1.r()) * percent).toInt() shl 16) or
                 ((c1.g() + (c2.g() - c1.g()) * percent).toInt() shl 8) or
                 (c1.b() + (c2.b() - c1.b()) * percent).toInt()
+    }
+
+    @ColorInt
+    private fun calcColorHSV(): Int {
+        val h = mLockHeight / 2f
+        if (pickerPosition <= h)
+            return colors[0]
+        if (pickerPosition >= width - h)
+            return colors.last()
+        val range = (pickerPosition - h) / (width - mLockHeight)
+        return Color.HSVToColor(floatArrayOf(range * 360, 1f, 1f))
+    }
+
+    /**
+     * 设置选择颜色并移动到此位置
+     */
+    fun setPickColorMoveToPosition(color: Int) {
+        val hsv = FloatArray(3)
+        Color.RGBToHSV(color.r(), color.g(), color.b(), hsv)
+        pickerPosition = hsv[0] * (width - mLockHeight) / 360 + mLockHeight / 2f
+        proxyCheckTapAndDrag()
     }
 }
 

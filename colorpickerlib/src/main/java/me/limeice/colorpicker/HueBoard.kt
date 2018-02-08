@@ -4,6 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.PaintDrawable
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.RectShape
 import android.support.annotation.ColorInt
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
@@ -16,26 +19,29 @@ class HueBoard @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    private val mPaddingBoth: Int
+    companion object {
+        const val MOVE_NONE: Byte = 0
+        const val MOVE_STOP: Byte = 1
+        const val MOVE_ALLOW: Byte = 2
+    }
 
-    private var mGradientX: LinearGradient
-    private var mGradientY: LinearGradient
+    private val mDotSize: Int
 
-    private val mPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val mSmallDotSize: Int
 
     private val mPickerPaintSolid: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
-
-    private val mRect: RectF = RectF()
 
     private val mDotDrawable: Drawable = ContextCompat.getDrawable(context, R.drawable.ic_dot)
 
     private val gesture: MiniGesture = MiniGesture(context)
 
-    private var mComposeShader: ComposeShader
-
-    @ColorInt var pickColor: Int = Color.RED
-
     private val oldSize = intArrayOf(0, 0)
+
+    private val mPaintDrawable: PaintDrawable
+
+    private var mMoveMode: Byte = MOVE_NONE
+
+    @ColorInt var inPutColor: Int = Color.RED
 
     /**
      * 获得Picker按钮位置
@@ -44,6 +50,10 @@ class HueBoard @JvmOverloads constructor(
         private set
 
     var pickerPositionY: Float = 0f
+        private set
+
+    @ColorInt var pickColor: Int = Color.RED
+        private set
 
     /**
      * 颜色改变监听
@@ -51,26 +61,17 @@ class HueBoard @JvmOverloads constructor(
     var colorChangeListener: (Int) -> Unit = { _ -> }
 
     init {
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         val small = resources.configuration.smallestScreenWidthDp < 600
-        mPaddingBoth = if (small) dp2px(4f) else dp2px(6f)
-        mPaint.isAntiAlias = true
+        mDotSize = if (small) dp2px(16f) else dp2px(20f)
+        mSmallDotSize = Math.round(mDotSize * 0.70f)
         mPickerPaintSolid.style = Paint.Style.FILL
         mPickerPaintSolid.color = pickColor
-        mGradientX = LinearGradient(0f, 0f, width.toFloat(), 0f, Color.TRANSPARENT, pickColor, Shader.TileMode.CLAMP)
-        mGradientY = LinearGradient(0f, 0f, 0f, height.toFloat(), Color.TRANSPARENT, Color.BLACK, Shader.TileMode.CLAMP)
-        mComposeShader = ComposeShader(mGradientY, mGradientX, PorterDuff.Mode.MULTIPLY)
-        mPaint.shader = mComposeShader
-        gesture.setDrag { _, dx, dy ->
-            pickerPositionX += dx
-            pickerPositionY += dy
-            proxyCheckTapAndDrag()
-        }.setTap { e ->
-                    pickerPositionX = e.x
-                    pickerPositionY = e.y
-                    proxyCheckTapAndDrag()
-                }
         setPadding(0, 0, 0, 0)
-        // setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+        mDotDrawable.setBounds(-mDotSize, -mDotSize, mDotSize, mDotSize)
+        mPaintDrawable = PaintDrawable()
+        initDrawable()
+        registerEvent()
     }
 
     /**
@@ -87,39 +88,128 @@ class HueBoard @JvmOverloads constructor(
         if (oldSize[0] == width && oldSize[1] == height) return
         oldSize[0] = width
         oldSize[1] = height
-        mGradientX = LinearGradient(0f, 0f, width.toFloat(), 0f, Color.TRANSPARENT, pickColor, Shader.TileMode.CLAMP)
-        mGradientY = LinearGradient(0f, 0f, 0f, height.toFloat(), Color.TRANSPARENT, Color.BLACK, Shader.TileMode.CLAMP)
-        mComposeShader = ComposeShader(mGradientY, mGradientX, PorterDuff.Mode.MULTIPLY)
-        mPaint.shader = mComposeShader
-        mRect.set(0f, mPaddingBoth.toFloat(), width.toFloat(), height.toFloat() - mPaddingBoth)
+        mPaintDrawable.setBounds(0, 0, width, height)
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        val r = height / 2f
-        val p = pickerPositionX.toInt()
-        canvas.drawRoundRect(mRect, 36f, 36f, mPaint)
-        // mDotDrawable.setBounds(p, 0, p + height, height)
-        // mDotDrawable.draw(canvas)
-        // canvas.drawCircle(pickerPositionX, r, r - mPaddingBoth, mPickerPaintSolid)
+        canvas.save()
+        mPaintDrawable.draw(canvas)
+        canvas.translate(pickerPositionX, pickerPositionY)
+        mDotDrawable.draw(canvas)
+        canvas.drawCircle(0f, 0f, mSmallDotSize.toFloat(), mPickerPaintSolid)
+        canvas.restore()
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    override fun onTouchEvent(event: MotionEvent): Boolean =
-            gesture.onTouchEvent(event) || super.onTouchEvent(event)
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (event.action == MotionEvent.ACTION_DOWN)
+            mMoveMode = MOVE_NONE
+        return gesture.onTouchEvent(event) || super.onTouchEvent(event)
+    }
+
+    private fun initDrawable() {
+        mPaintDrawable.shaderFactory = object : ShapeDrawable.ShaderFactory() {
+            override fun resize(width: Int, height: Int): Shader {
+                val x = LinearGradient(0f, 0f, width.toFloat(), 0f, Color.WHITE, inPutColor, Shader.TileMode.CLAMP)
+                val y = LinearGradient(0f, 0f, 0f, height.toFloat(), Color.WHITE, Color.BLACK, Shader.TileMode.CLAMP)
+                return ComposeShader(x, y, PorterDuff.Mode.MULTIPLY)
+            }
+        }
+        mPaintDrawable.shape = RectShape()
+    }
+
+    fun updateDrawable() = apply {
+        initDrawable()
+    }
+
+    private fun registerEvent() {
+        gesture.setDrag { e, dx, dy ->
+            if (MOVE_STOP == mMoveMode) return@setDrag
+            if (MOVE_NONE == mMoveMode) {
+                if (!(e isMove mDotSize)) {
+                    mMoveMode = MOVE_STOP
+                    return@setDrag
+                }
+                mMoveMode = MOVE_ALLOW
+            }
+            pickerPositionX += dx
+            pickerPositionY += dy
+            proxyCheckTapAndDrag()
+        }.setTap { e ->
+                    pickerPositionX = e.x
+                    pickerPositionY = e.y
+                    proxyCheckTapAndDrag()
+                }
+    }
 
     private fun proxyCheckTapAndDrag() {
-        if (pickerPositionX < 0)
-            pickerPositionX = 0f
-        else if (pickerPositionX > width)
-            pickerPositionX = width.toFloat()
+        pickerPositionX = when {
+            pickerPositionX < 0 -> 0f
+            pickerPositionX > width -> width.toFloat()
+            else -> pickerPositionX
+        }
+
+        pickerPositionY = when {
+            pickerPositionY < 0 -> 0f
+            pickerPositionY > height -> width.toFloat()
+            else -> pickerPositionY
+        }
+
         pickColor = calcColor()
         colorChangeListener(pickColor)
         mPickerPaintSolid.color = pickColor
         invalidate()
     }
 
+    /**
+     * 刷新
+     */
+    fun update(): Unit = proxyCheckTapAndDrag()
+
+    fun setPosition(x: Float, y: Float) {
+        pickerPositionX = x
+        pickerPositionY = y
+        proxyCheckTapAndDrag()
+    }
+
+    fun setPickColorMoveToPosition(@ColorInt pickColor: Int) {
+        val hsv = FloatArray(3)
+        Color.colorToHSV(pickColor, hsv)
+        inPutColor = Color.HSVToColor(floatArrayOf(hsv[0], 1f, 1f))
+        this.pickColor = pickColor
+        pickerPositionX = width * hsv[1]
+        pickerPositionY = height * (1 - hsv[2])
+        mPickerPaintSolid.color = pickColor
+        colorChangeListener(pickColor)
+        initDrawable()
+        invalidate()
+    }
+
+    private fun Float.square() = this * this
+
+    private infix fun MotionEvent.isMove(r: Int): Boolean = (pickerPositionX - x).square() + (pickerPositionY - y).square() <= (r * 2f).square()
+
     @ColorInt
-    private fun calcColor(): Int = Color.WHITE
+    private fun calcColor(): Int {
+        val gray = (0XFF - pickerPositionY / height * 0XFF).toInt()
+        val grayColor: Int = (0xFF shl 24) or (gray shl 16) or (gray shl 8) or gray
+        val hintPercent = pickerPositionX / width
+        val hintColor: Int = (0xFF shl 24) or
+                (0xFF + ((inPutColor.r() - 0XFF) * hintPercent).toInt() shl 16) or
+                (0xFF + ((inPutColor.g() - 0XFF) * hintPercent).toInt() shl 8) or
+                (0xFF + (inPutColor.b() - 0XFF) * hintPercent).toInt()
+        return grayColor multiply hintColor // 正片叠底
+    }
+
+    @Deprecated("Use calcColor()")
+    @ColorInt
+    private fun calcColorHSV(): Int {
+        val hsv = FloatArray(3)
+        Color.colorToHSV(inPutColor, hsv)
+        hsv[1] = pickerPositionX / width
+        hsv[2] = 1 - (pickerPositionY / height)
+        return Color.HSVToColor(hsv)
+    }
 }
 

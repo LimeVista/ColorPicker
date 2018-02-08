@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorPrimaryDark">#FFFFFF</color>
+    <color name="colorAccent">#1FA5FB</color>
+
+    <color name="color_normal">#000000</color>
+    <color name="color_normal_t">#0165a4</color>
+    <color name="color_right">#FF32CD32</color>
+    <color name="color_right_t">#008400</color>
+
+    <color name="colorGuideS1">#FFA42C</color>
+    <color name="colorGuideS2">#47A2FF</color>
+    <color name="colorGuideS3">#C17CFD</color>
+
+    <color name="adTint">#00CB6B</color>
+
+    <color name="whiteBg90">#EEFFFFFF</color>
+
+    <color name="green3">#24C874</color>
+    <color name="green_1">#00CB6B</color>
+    <color name="green_2">#00CB6B</color>
+    <color name="blue_1">#1FA5FB</color>
+    <color name="blue_2">#1090E0</color>
+
+    <color name="colorScreenTitleFont">#000000</color>
+    <color name="blue_3">#1FA5FB</color>
+    <color name="gray_1">#8F8F8F</color>
+    <color name="gray_2">#EBEBEB</color>
+
+    <color name="colorBg">#CCCCCCCC</color>
+
+    <color name="shadow_view_foreground_color_light">#33ffffff</color>
+    <color name="shadow_view_default_shadow_color">#DCDDE0</color>
+    <color name="shadow_view_foreground_color_dark">#1f000000</color>
+</resources>

@@ -58,3 +58,15 @@ fun Int.g(): Int = (this and 0x0000FF00) ushr 8
 
 @ColorInt
 fun Int.b(): Int = this and 0x000000FF
+
+
+/**
+ * 正片叠底
+ */
+@ColorInt
+infix fun Int.multiply(color: Int): Int {
+    return (0xFF shl 24) or
+            ((r() * color.r() / 0xFF) shl 16) or
+            ((g() * color.g() / 0xFF) shl 8) or
+            (b() * color.b() / 0xFF)
+}

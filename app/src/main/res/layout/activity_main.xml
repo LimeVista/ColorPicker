@@ -3,16 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     android:orientation="vertical"
-    tools:context="me.limeice.colorpicker.MainActivity">
+    android:padding="16dp">
 
-    <me.limeice.colorpicker.ColorCard
-        android:layout_width="match_parent"
-        android:layout_height="48dp" />
-
-    <me.limeice.colorpicker.HueBoard
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_gravity="center_horizontal" />
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/mOpen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Opne"
+        tools:ignore="HardcodedText" />
 
 </LinearLayout>
