@@ -62,7 +62,7 @@ class ColorPickerDialog @JvmOverloads constructor(context: Context, @StyleRes th
             mCompareColorPanel.dstColor = color
         }
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        colorHistory.add(0xFF4C5A79.toInt())
+        // colorHistory.add(0xFF4C5A79.toInt()) Test
     }
 
     fun openDialog() {
