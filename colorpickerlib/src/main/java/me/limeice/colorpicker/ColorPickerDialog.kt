@@ -95,7 +95,8 @@ class ColorPickerDialog @JvmOverloads constructor(context: Context, @StyleRes th
             val param = LinearLayout.LayoutParams(size, size)
             param.gravity = Gravity.CENTER_VERTICAL
             val margin = (size * 0.3f).toInt()
-            param.setMargins(margin, margin, margin, margin)
+            val marginLeftRight = (size * 0.4f).toInt()
+            param.setMargins(marginLeftRight, margin, marginLeftRight, margin)
             mHistoryLayout.addView(mColorViews[i], param)
         }
     }
