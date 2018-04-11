@@ -8,8 +8,8 @@ android {
         applicationId "me.limeice.colorpicker"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 20180413
-        versionName "0.1.3"
+        versionCode 20180414
+        versionName "0.1.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

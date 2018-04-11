@@ -157,7 +157,6 @@ class ColorPickerDialog @JvmOverloads constructor(context: Context, @StyleRes th
                     if (it.checked && it != c)
                         it.checked = false
                 }
-                mCompareColorPanel.srcColor = changeColor
                 changeColor(c.circleColor)
             }
         }
@@ -173,7 +172,10 @@ class ColorPickerDialog @JvmOverloads constructor(context: Context, @StyleRes th
             param.setMargins(marginLeftRight, margin, marginLeftRight, margin)
             mHistoryLayout.addView(mColorViews[i], param)
         }
-        mContentView.post { changeColor(changeColor) }
+        mContentView.post {
+            mCompareColorPanel.srcColor = changeColor
+            changeColor(changeColor)
+        }
     }
 
     /* 改变颜色 */
