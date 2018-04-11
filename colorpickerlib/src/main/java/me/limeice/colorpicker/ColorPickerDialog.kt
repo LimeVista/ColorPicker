@@ -138,6 +138,43 @@ class ColorPickerDialog @JvmOverloads constructor(context: Context, @StyleRes th
         }
     }
 
+    /**
+     * 打开颜色选择对话框
+     * @param defaultColor 默认颜色
+     * @param changeColor  当前显示颜色
+     */
+    fun openDialog(@ColorInt defaultColor: Int, @ColorInt changeColor: Int) {
+        if (isShowing)
+            return
+        this.defaultColor = defaultColor
+        cutLast()
+        while (mColorViews.size < colorHistory.size) {
+            val c = CircleColorView(context)
+            mColorViews.add(c)
+            c.setOnClickListener {
+                c.checked = true
+                mColorViews.forEach {
+                    if (it.checked && it != c)
+                        it.checked = false
+                }
+                changeColor(c.circleColor)
+            }
+        }
+        window.setLayout((context.resources.displayMetrics.widthPixels * 0.85f).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+        show()
+        mHistoryLayout.removeAllViews()
+        for (i in colorHistory.indices) {
+            mColorViews[i].setColor(colorHistory[i])
+            val param = LinearLayout.LayoutParams(size, size)
+            param.gravity = Gravity.CENTER_VERTICAL
+            val margin = (size * 0.3f).toInt()
+            val marginLeftRight = (size * 0.15f).toInt()
+            param.setMargins(marginLeftRight, margin, marginLeftRight, margin)
+            mHistoryLayout.addView(mColorViews[i], param)
+        }
+        mContentView.post { changeColor(changeColor) }
+    }
+
     /* 改变颜色 */
     private fun changeColor(color: Int) {
         mColorCard.setPickColorMoveToPosition(color)
