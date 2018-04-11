@@ -157,6 +157,7 @@ class ColorPickerDialog @JvmOverloads constructor(context: Context, @StyleRes th
                     if (it.checked && it != c)
                         it.checked = false
                 }
+                mCompareColorPanel.srcColor = changeColor
                 changeColor(c.circleColor)
             }
         }
