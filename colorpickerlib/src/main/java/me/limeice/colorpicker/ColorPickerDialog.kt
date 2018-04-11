@@ -58,6 +58,20 @@ class ColorPickerDialog @JvmOverloads constructor(context: Context, @StyleRes th
      */
     var colorHistory = mutableListOf<Int>()
 
+    /**
+     * 吸管（取色器）点击事件
+     * @param click 点击事件
+     */
+    fun colorStrawOnClick(click: (v: View) -> Unit) {
+        mColorStraw.setOnClickListener(click)
+        mColorStraw.visibility = View.VISIBLE
+    }
+
+    /**
+     * 吸管
+     */
+    val mColorStraw: ImageView
+
     init {
         setContentView(mContentView)
         mContentView.findViewById<ImageView>(R.id.mReset).setOnClickListener { _ -> changeColor(defaultColor) }
@@ -73,6 +87,7 @@ class ColorPickerDialog @JvmOverloads constructor(context: Context, @StyleRes th
             mHueBoard.updateDrawable().update()
         }
 
+        mColorStraw = mContentView.findViewById(R.id.mColorStraw)
         mHueBoard.colorChangeListener = { color ->
             mCompareColorPanel.dstColor = color
         }
