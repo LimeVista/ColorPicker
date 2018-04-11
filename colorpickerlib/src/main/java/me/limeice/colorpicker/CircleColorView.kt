@@ -108,6 +108,7 @@ class CircleColorView @JvmOverloads constructor(context: Context, attrs: Attribu
                 .start()
     }
 
+    /* 设置颜色 */
     fun setColor(@ColorInt colorInt: Int) {
         if (circleColor == colorInt) return
         circleColor = colorInt

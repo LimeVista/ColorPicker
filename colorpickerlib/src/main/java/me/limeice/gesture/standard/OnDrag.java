@@ -2,9 +2,6 @@ package me.limeice.gesture.standard;
 
 import android.view.MotionEvent;
 
-/**
- * Created by LimeV on 2017/12/3.
- */
 
 public interface OnDrag {
 
@@ -12,8 +9,8 @@ public interface OnDrag {
      * 拖拽事件
      *
      * @param event 触摸事件
-     * @param dx
-     * @param dy
+     * @param dx 偏移 x 位移
+     * @param dy 偏移 y 位移
      */
-    void onDrag(MotionEvent event,float dx, float dy);
+    void onDrag(MotionEvent event, float dx, float dy);
 }

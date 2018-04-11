@@ -1,5 +1,6 @@
 package me.limeice.gesture;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -18,6 +19,7 @@ import me.limeice.gesture.standard.OnTap;
  * @version 1.0
  */
 
+@SuppressWarnings("WeakerAccess")
 public final class MiniGesture implements DefaultDetector {
 
     private static final int LONG_PRESS = 0x01;
@@ -25,13 +27,14 @@ public final class MiniGesture implements DefaultDetector {
     /**
      * 当使用此接口时，OnDrag, OnLongPress, OnTap单独接口全部忽略
      */
-    public interface OnGestureListener extends OnDrag, OnLongPress, OnTap {
+    interface OnGestureListener extends OnDrag, OnLongPress, OnTap {
 
     }
 
     /**
      * 监听线程
      */
+    @SuppressLint("HandlerLeak")
     private final class GestureHandler extends Handler {
         GestureHandler() {
             super();
@@ -160,12 +163,9 @@ public final class MiniGesture implements DefaultDetector {
         ViewConfiguration config = ViewConfiguration.get(context);
         int touchSlop = config.getScaledTouchSlop();
         mTouchSlopSquare = touchSlop * touchSlop;
-        mDrag = (e, x, y) -> {
-        };
-        mLongPress = e -> {
-        };
-        mTap = e -> {
-        };
+        emptyOnDrag();
+        emptyOnLongPress();
+        emptyOnTap();
     }
 
     /**
@@ -187,8 +187,7 @@ public final class MiniGesture implements DefaultDetector {
      */
     public MiniGesture setDrag(OnDrag drag) {
         if (drag == null)
-            mDrag = (e,x, y) -> {
-            };
+            emptyOnDrag();
         else
             this.mDrag = drag;
         return this;
@@ -202,8 +201,7 @@ public final class MiniGesture implements DefaultDetector {
      */
     public MiniGesture setLongPress(OnLongPress longPress) {
         if (longPress == null)
-            mLongPress = e -> {
-            };
+            emptyOnLongPress();
         else
             this.mLongPress = longPress;
         return this;
@@ -217,8 +215,7 @@ public final class MiniGesture implements DefaultDetector {
      */
     public MiniGesture setTap(OnTap tap) {
         if (tap == null)
-            mTap = e -> {
-            };
+            emptyOnTap();
         else
             this.mTap = tap;
         return this;
@@ -233,5 +230,32 @@ public final class MiniGesture implements DefaultDetector {
     public MiniGesture setLongPressTimeOut(int longPressTimeOut) {
         this.mLongPressTimeOut = longPressTimeOut;
         return this;
+    }
+
+    private void emptyOnDrag() {
+        mDrag = new OnDrag() {
+            @Override
+            public void onDrag(MotionEvent event, float dx, float dy) {
+
+            }
+        };
+    }
+
+    private void emptyOnTap() {
+        mTap = new OnTap() {
+            @Override
+            public void onTap(MotionEvent event) {
+
+            }
+        };
+    }
+
+    private void emptyOnLongPress() {
+        mLongPress = new OnLongPress() {
+            @Override
+            public void onLongPress(MotionEvent event) {
+
+            }
+        };
     }
 }

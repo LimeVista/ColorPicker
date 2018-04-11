@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/white"
+    android:background="@drawable/bg_round_rect"
     android:orientation="vertical"
     android:paddingBottom="16dp"
     android:paddingTop="16dp">
@@ -13,6 +13,14 @@
         android:layout_height="240dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp" />
+
+    <me.limeice.colorpicker.ColorCard
+        android:id="@+id/mColorCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="@dimen/dp_16" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -36,18 +44,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="6dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginLeft="16dp"
+            android:layout_marginRight="8dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="6dp" />
     </LinearLayout>
-
-    <me.limeice.colorpicker.ColorCard
-        android:id="@+id/mColorCard"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="@dimen/dp_16" />
 
     <LinearLayout
         android:id="@+id/mHistoryLayout"
@@ -65,6 +67,7 @@
         android:layout_height="@dimen/dp_36"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
+        android:background="@drawable/bg_btn_normal"
         android:text="@string/done"
         android:textColor="#333" />
 </LinearLayout>

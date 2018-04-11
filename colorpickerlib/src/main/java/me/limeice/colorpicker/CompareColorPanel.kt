@@ -18,6 +18,9 @@ class CompareColorPanel @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
+    /**
+     * 源颜色
+     */
     @ColorInt var srcColor: Int = 0xFF4C5A79.toInt()
         set(value) {
             field = value
@@ -25,17 +28,38 @@ class CompareColorPanel @JvmOverloads constructor(
             postInvalidate()
         }
 
+    /**
+     * 对比颜色
+     */
     @ColorInt var dstColor: Int = Color.GREEN
         set(value) {
             field = value
             dstShapeDrawable.paint.color = field
             postInvalidate()
         }
-
+    /**
+     * 源颜色生成圆角矩形
+     */
     private val srcShapeDrawable: ShapeDrawable
+
+    /**
+     * 目标颜色生成圆角矩形
+     */
     private val dstShapeDrawable: ShapeDrawable
-    private val srcOuterRadii = FloatArray(8)
-    private val destOuterRadii = FloatArray(8)
+
+    /**
+     * An array of 8 radius values, for the inner roundrect.
+     * The first two floats are for the top-left corner
+     *(remaining pairs correspond clockwise).
+     */
+    private val srcOuterRadii = FloatArray(8)       // 圆角数组
+
+    /**
+     * An array of 8 radius values, for the inner roundrect.
+     * The first two floats are for the top-left corner
+     *(remaining pairs correspond clockwise).
+     */
+    private val destOuterRadii = FloatArray(8)      // 圆角数组
 
     init {
         srcShapeDrawable = ShapeDrawable(RoundRectShape(srcOuterRadii, null, null))
@@ -65,6 +89,9 @@ class CompareColorPanel @JvmOverloads constructor(
         dstShapeDrawable.draw(canvas)
     }
 
+    /**
+     * 修复圆角矩形显示效果
+     */
     private fun fixOuterRadii() {
         val h = height / 2f
         srcOuterRadii[0] = h; srcOuterRadii[1] = h

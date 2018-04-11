@@ -40,7 +40,7 @@ class ColorCard @JvmOverloads constructor(
 
     private val mRect: RectF = RectF()
 
-    private val mDotDrawable: Drawable = ContextCompat.getDrawable(context, R.drawable.ic_dot)
+    private val mDotDrawable: Drawable = ContextCompat.getDrawable(context, R.drawable.ic_dot)!!
 
     private val gesture: MiniGesture = MiniGesture(context)
 
@@ -65,8 +65,8 @@ class ColorCard @JvmOverloads constructor(
 
     init {
         val small = resources.configuration.smallestScreenWidthDp < 600
-        mPaddingBoth = if (small) dp2px(4f) else dp2px(6f)
-        mLockHeight = if (small) dp2px(20f) else dp2px(28f)
+        mPaddingBoth = if (small) dp2px(6f) else dp2px(10f)
+        mLockHeight = if (small) dp2px(32f) else dp2px(40f)
         pickerPosition = mLockHeight / 2f
         mPaint.isAntiAlias = true
         mPickerPaintSolid.style = Paint.Style.FILL
@@ -76,9 +76,9 @@ class ColorCard @JvmOverloads constructor(
             pickerPosition += dx
             proxyCheckTapAndDrag()
         }.setTap { e ->
-                    pickerPosition = e.x
-                    proxyCheckTapAndDrag()
-                }
+            pickerPosition = e.x
+            proxyCheckTapAndDrag()
+        }
         setPadding(0, 0, 0, 0)
     }
 
@@ -105,7 +105,7 @@ class ColorCard @JvmOverloads constructor(
         super.onDraw(canvas)
         val r = height / 2f
         val p = (pickerPosition + 0.5f - mLockHeight / 2).toInt()
-        canvas.drawRoundRect(mRect, r, r, mPaint)
+        canvas.drawRoundRect(mRect, r - mPaddingBoth / 2, r - mPaddingBoth / 2, mPaint)
         mDotDrawable.setBounds(p, 0, p + height, height)
         mDotDrawable.draw(canvas)
         canvas.drawCircle(pickerPosition, r, r - mPaddingBoth, mPickerPaintSolid)
@@ -126,30 +126,10 @@ class ColorCard @JvmOverloads constructor(
             pickerPosition = h2
         else if (pickerPosition > width - h2)
             pickerPosition = width - h2
-        pickColor = calcColor()
+        pickColor = calcColorHSV()
         colorChangeListener(pickColor)
         mPickerPaintSolid.color = pickColor
         invalidate()
-    }
-
-
-    @ColorInt
-    private fun calcColor(): Int {
-        val h = mLockHeight / 2f
-        if (pickerPosition <= h)
-            return colors[0]
-        if (pickerPosition >= width - h)
-            return colors.last()
-        val p = pickerPosition - h
-        val range = (width - mLockHeight) / (colors.size - 1)
-        val index = (p / range).toInt()
-        val percent = (p % range) / range
-        val c1 = colors[index]
-        val c2 = colors[index + 1]
-        return (0xFF shl 24) or
-                ((c1.r() + (c2.r() - c1.r()) * percent).toInt() shl 16) or
-                ((c1.g() + (c2.g() - c1.g()) * percent).toInt() shl 8) or
-                (c1.b() + (c2.b() - c1.b()) * percent).toInt()
     }
 
     @ColorInt
