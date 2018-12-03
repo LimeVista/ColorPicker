@@ -74,7 +74,7 @@ class ColorPickerDialog @JvmOverloads constructor(context: Context, @StyleRes th
 
     init {
         setContentView(mContentView)
-        mContentView.findViewById<ImageView>(R.id.mReset).setOnClickListener { _ -> changeColor(defaultColor) }
+        mContentView.findViewById<ImageView>(R.id.mReset).setOnClickListener { changeColor(defaultColor) }
         mContentView.findViewById<View>(R.id.mDone).setOnClickListener {
             mHistoryLayout.removeAllViews()
             clearRepeatFormHistory(mHueBoard.pickColor)
@@ -108,14 +108,14 @@ class ColorPickerDialog @JvmOverloads constructor(context: Context, @StyleRes th
             mColorViews.add(c)
             c.setOnClickListener {
                 c.checked = true
-                mColorViews.forEach {
-                    if (it.checked && it != c)
-                        it.checked = false
+                mColorViews.forEach { v ->
+                    if (v.checked && v != c)
+                        v.checked = false
                 }
                 changeColor(c.circleColor)
             }
         }
-        window.setLayout((context.resources.displayMetrics.widthPixels * 0.85f).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+        window?.setLayout((context.resources.displayMetrics.widthPixels * 0.85f).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
         show()
         mHistoryLayout.removeAllViews()
         for (i in colorHistory.indices) {
@@ -153,14 +153,14 @@ class ColorPickerDialog @JvmOverloads constructor(context: Context, @StyleRes th
             mColorViews.add(c)
             c.setOnClickListener {
                 c.checked = true
-                mColorViews.forEach {
-                    if (it.checked && it != c)
-                        it.checked = false
+                mColorViews.forEach { v ->
+                    if (v.checked && v != c)
+                        v.checked = false
                 }
                 changeColor(c.circleColor)
             }
         }
-        window.setLayout((context.resources.displayMetrics.widthPixels * 0.85f).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+        window?.setLayout((context.resources.displayMetrics.widthPixels * 0.85f).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
         show()
         mHistoryLayout.removeAllViews()
         for (i in colorHistory.indices) {

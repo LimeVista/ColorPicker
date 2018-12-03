@@ -55,7 +55,7 @@ class ColorCard @JvmOverloads constructor(
     /**
      * 颜色改变监听
      */
-    var colorChangeListener: (Int) -> Unit = { _ -> }
+    var colorChangeListener: (Int) -> Unit = { }
 
     /**
      * 获取颜色

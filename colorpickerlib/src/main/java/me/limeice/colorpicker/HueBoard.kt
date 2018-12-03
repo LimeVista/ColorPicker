@@ -51,7 +51,7 @@ class HueBoard @JvmOverloads constructor(
     /**
      * 颜色改变监听
      */
-    var colorChangeListener: (Int) -> Unit = { _ -> }
+    var colorChangeListener: (Int) -> Unit = { }
 
     init {
         setLayerType(View.LAYER_TYPE_SOFTWARE, null)
